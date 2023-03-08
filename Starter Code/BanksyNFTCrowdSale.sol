@@ -1,17 +1,21 @@
 pragma solidity ^0.5.0;
 
-import "./BanksyNFT.sol"
+// import all inheritance need for crowdfund and related fungible token deployment
+
+import "./BanksyFR.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/crowdsale/Crowdsale.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/crowdsale/emission/MintedCrowdsale.sol";
 
 
-contract BanksyNFTCrowdSale is Crowdsale, MintedCrowdsale{ 
+// Get the BanksyNFTCrowdsale contract to inherit the above OpenZeppelin:
+
+contract BanksyNFTCrowdsale is Crowdsale, MintedCrowdsale{
     
     // Provide parameters for all of the features of your crowdsale, such as the `rate`, `wallet` for fundraising, and `token`.
     constructor(
         uint rate,
         address payable wallet,
-        BanksyNFT token
+        BanksyFR token
     )
     Crowdsale(rate, wallet, token) public {
         // constructor can stay empty
@@ -20,35 +24,35 @@ contract BanksyNFTCrowdSale is Crowdsale, MintedCrowdsale{
 
 
 contract BanksyNFTCrowdSaleDeployer {
-    // Create an `address public` variable called `kasei_token_address`.
+    // Create a public token address
     address public banksy_token_address;
-    // Create an `address public` variable called `kasei_crowdsale_address`.
+    // Create a public address variable for the token
     address public banksy_crowdsale_address;
 
-    // Add the constructor.
+    // Add the constructor
     constructor(
        string memory name,
        string memory symbol,
        address payable wallet
     ) 
     public {
-        // Create a new instance of the KaseiCoin contract.
-        BanksyNFT token = new KaseiCoin(name, symbol, 0);
+        // Create a new instance of the BanksyFR contract
+        BanksyFR token = new BanksyFR(name, symbol, 0);
         
-        // Assign the token contract’s address to the `kasei_token_address` variable.
+        // Assign the token's contract address upon transaction
         banksy_token_address = address(token);
 
-        // Create a new instance of the `KaseiCoinCrowdsale` contract
-        BanksyNFTCrowdSale banksy_crowdsale = new BanksyNFTCrowdsale(1, wallet, token);
+        // Create a new instance of the crowdsale contract
+        BanksyNFTCrowdsale banksy_crowdsale = new BanksyNFTCrowdsale(1, wallet, token);
 
             
-        // Aassign the `KaseiCoinCrowdsale` contract’s address to the `kasei_crowdsale_address` variable.
+        // Assign the crowdsale contract’s address to the `banksy_crowdsale_address` variable.
         banksy_crowdsale_address = address(banksy_crowdsale);
 
-        // Set the `KaseiCoinCrowdsale` contract as a minter
+        // Set the crowdsale contract as a minter
         token.addMinter(banksy_crowdsale_address);
         
-        // Have the `KaseiCoinCrowdsaleDeployer` renounce its minter role.
+        // Have the `BanksyNFTCrowdsaleDeployer` renounce its minter role.
         token.renounceMinter();
     }
 }
